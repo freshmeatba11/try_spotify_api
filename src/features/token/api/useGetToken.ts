@@ -1,10 +1,17 @@
 import { atomsWithQuery } from "jotai-tanstack-query";
+import Cookies from "universal-cookie";
 
 import { ApiAccounts } from "@/service/api";
 import { RedirectUri, ClientId } from "@/utils/spotify";
 
 import { GetTokenBody } from "./useGetToken.type";
 import { initialCodeAtom } from "../state";
+import { CookiesConfig } from "@/config/spotify";
+
+const cookies = new Cookies(null, {
+  path: "/",
+  maxAge: CookiesConfig.maxAgeForWeek,
+});
 
 const codeVerifier = localStorage.getItem("code_verifier") ?? "";
 export const [useGetTokenAtomQuery] = atomsWithQuery((get) => ({
@@ -23,8 +30,8 @@ export const [useGetTokenAtomQuery] = atomsWithQuery((get) => ({
   onSuccess: (data: any) => {
     console.log(data);
     if (data.ok) {
-      localStorage.setItem("access_token", data.data.access_token);
-      localStorage.setItem("refresh_token", data.data.refresh_token);
+      cookies.set("access_token", data.data.access_token);
+      cookies.set("refresh_token", data.data.refresh_token);
     }
   },
   refetchOnMount: false,

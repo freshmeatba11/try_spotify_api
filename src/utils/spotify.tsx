@@ -1,5 +1,7 @@
 import { useSetAtom } from "jotai";
-import { SpotifyConfig } from "@/config/spotify";
+import Cookies from "universal-cookie";
+
+import { SpotifyConfig, CookiesConfig } from "@/config/spotify";
 import {
   initialTokenAtom,
   initialRefreshTokenAtom,
@@ -59,9 +61,12 @@ export const spotifyLogin = () =>
     window.location = "https://accounts.spotify.com/authorize?" + args;
   });
 
+const cookies = new Cookies(null, {
+  path: "/",
+  maxAge: CookiesConfig.maxAgeForWeek,
+});
+
 export const useSpotifyLogout = () => {
-  // useSetAtom(initialTokenAtom)("");
-  // useSetAtom(initialRefreshTokenAtom)("");
   const setInitialTokenAtom = useSetAtom(initialTokenAtom);
   const setInitialRefreshTokenAtom = useSetAtom(initialRefreshTokenAtom);
   const setInitialCodeAtom = useSetAtom(initialCodeAtom);
@@ -70,8 +75,8 @@ export const useSpotifyLogout = () => {
     setInitialTokenAtom("");
     setInitialRefreshTokenAtom("");
     setInitialCodeAtom("");
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    cookies.remove("access_token");
+    cookies.remove("refresh_token");
     localStorage.removeItem("code_verifier");
   };
 };

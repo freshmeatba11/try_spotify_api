@@ -53,7 +53,7 @@ export default function Home() {
       >
         Log out
       </button>
-      <p>{tokenAtom}</p>
+
       <div>
         {
           //@ts-ignore

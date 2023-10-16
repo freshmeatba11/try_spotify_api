@@ -1,11 +1,19 @@
 import { atom } from "jotai";
+import Cookies from "universal-cookie";
 
-const localStorageToken = localStorage.getItem("access_token");
-export const initialTokenAtom = atom(localStorageToken ?? "");
+import { CookiesConfig } from "@/config/spotify";
+
+const cookies = new Cookies(null, {
+  path: "/",
+  maxAge: CookiesConfig.maxAgeForWeek,
+});
+
+const cookieToken = cookies.get("access_token");
+export const initialTokenAtom = atom(cookieToken ?? "");
 initialTokenAtom.debugLabel = "initialTokenAtom";
 
-const localStorageRefreshToken = localStorage.getItem("refresh_token");
-export const initialRefreshTokenAtom = atom(localStorageRefreshToken ?? "");
+const cookieRefreshToken = cookies.get("refresh_token");
+export const initialRefreshTokenAtom = atom(cookieRefreshToken ?? "");
 initialRefreshTokenAtom.debugLabel = "initialRefreshTokenAtom";
 
 export const initialCodeAtom = atom("");
