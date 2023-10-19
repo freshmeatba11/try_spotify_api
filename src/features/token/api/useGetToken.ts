@@ -30,8 +30,13 @@ export const [useGetTokenAtomQuery] = atomsWithQuery((get) => ({
   onSuccess: (data: any) => {
     console.log(data);
     if (data.ok) {
-      cookies.set("access_token", data.data.access_token);
+      const expireDate = Date.now() + CookiesConfig.tokenValidDurationInMs;
+
+      cookies.set("access_token", data.data.access_token, {
+        maxAge: CookiesConfig.tokenValidDurationInSec,
+      });
       cookies.set("refresh_token", data.data.refresh_token);
+      cookies.set("token_expires_in", expireDate);
     }
   },
   refetchOnMount: false,

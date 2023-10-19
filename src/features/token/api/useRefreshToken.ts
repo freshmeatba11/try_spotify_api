@@ -4,15 +4,10 @@ import Cookies from "universal-cookie";
 
 import { ApiAccounts } from "@/service/api";
 import { ClientId } from "@/utils/spotify";
-import { initialTokenAtom, initialRefreshTokenAtom } from "../state";
 import { RefreshTokenBody } from "./useRefreshToken.types";
 import { CookiesConfig } from "@/config/spotify";
 
 export const useRefreshToken = () => {
-  const setTokenAtom = useSetAtom(initialTokenAtom);
-  const [refreshTokenAtom, setRefreshTokenAtom] = useAtom(
-    initialRefreshTokenAtom
-  );
   const cookies = new Cookies(null, {
     path: "/",
     maxAge: CookiesConfig.maxAgeForWeek,
@@ -24,18 +19,20 @@ export const useRefreshToken = () => {
       const body: RefreshTokenBody = {
         grant_type: "refresh_token",
         client_id: ClientId,
-        refresh_token: refreshTokenAtom,
+        refresh_token: cookies.get("refresh_token"),
       };
       return ApiAccounts.post("api/token", body);
     },
     onSuccess: (data: any) => {
       console.log(data);
       if (data.ok) {
-        cookies.set("access_token", data.data.access_token);
+        const expireDate = Date.now() + CookiesConfig.tokenValidDurationInMs;
+        cookies.set("access_token", data.data.access_token, {
+          maxAge: CookiesConfig.tokenValidDurationInSec,
+        });
         cookies.set("refresh_token", data.data.refresh_token);
+        cookies.set("token_expires_in", expireDate);
 
-        setTokenAtom(data.data.access_token);
-        setRefreshTokenAtom(data.data.refresh_token);
         console.log("refresh success");
       }
     },

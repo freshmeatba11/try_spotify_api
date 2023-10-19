@@ -2,11 +2,7 @@ import { useSetAtom } from "jotai";
 import Cookies from "universal-cookie";
 
 import { SpotifyConfig, CookiesConfig } from "@/config/spotify";
-import {
-  initialTokenAtom,
-  initialRefreshTokenAtom,
-  initialCodeAtom,
-} from "@/features/token/state";
+import { initialCodeAtom } from "@/features/token/state";
 
 export const ClientId = SpotifyConfig.clientId;
 export const RedirectUri = SpotifyConfig.redirectUri;
@@ -67,16 +63,13 @@ const cookies = new Cookies(null, {
 });
 
 export const useSpotifyLogout = () => {
-  const setInitialTokenAtom = useSetAtom(initialTokenAtom);
-  const setInitialRefreshTokenAtom = useSetAtom(initialRefreshTokenAtom);
-  const setInitialCodeAtom = useSetAtom(initialCodeAtom);
+  const setCodeAtom = useSetAtom(initialCodeAtom);
   //todo 清空 query 快取
   return () => {
-    setInitialTokenAtom("");
-    setInitialRefreshTokenAtom("");
-    setInitialCodeAtom("");
+    setCodeAtom("");
     cookies.remove("access_token");
     cookies.remove("refresh_token");
+    cookies.remove("token_expires_in");
     localStorage.removeItem("code_verifier");
   };
 };

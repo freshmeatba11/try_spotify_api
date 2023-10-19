@@ -4,9 +4,10 @@ import styled from "styled-components";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAtom, useSetAtom } from "jotai";
 
+import { CookiesConfig } from "@/config/spotify";
 import { useSpotifyLogout } from "@/utils/spotify";
 import { useGetTokenAtomQuery } from "@/features/token/api/useGetToken";
-import { initialCodeAtom, initialTokenAtom } from "@/features/token/state";
+import { initialCodeAtom } from "@/features/token/state";
 
 const Button = styled.button`
   width: 100px;
@@ -25,7 +26,6 @@ const Success = () => {
   // const queryClient = useQueryClient();
 
   const [_] = useAtom(useGetTokenAtomQuery);
-  const setTokenAtom = useSetAtom(initialTokenAtom);
 
   const handleLogout = useSpotifyLogout();
 
@@ -37,7 +37,6 @@ const Success = () => {
     } else {
       if (_.ok) {
         console.log("登入成功！");
-        setTokenAtom(_.data.access_token);
         router.replace("/");
       } else {
         //* 處理登入失敗
